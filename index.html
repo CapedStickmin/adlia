@@ -3,9 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Adil - AI Assistant</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://generativelanguage.googleapis.com/v1beta/models/gemini-pro"></script>
 </head>
 <body>
-    <h1>Hello, World!</h1>
+    <header>
+        <h1>Welcome to ADIL</h1>
+        <p class="subtitle">Your AI Assistant powered by Gemini</p>
+    </header>
+
+    <section class="chat-container">
+        <div class="chat-messages" id="chat-messages">
+            <!-- Messages will appear here -->
+        </div>
+        <div class="chat-input-container">
+            <input type="text" id="user-input" placeholder="Ask me anything..." />
+            <button id="send-button">Send</button>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 ADIL AI Assistant</p>
+    </footer>
+    <script src="config.js"></script>
+    <script src="script.js"></script>
 </body>
-</html> 
+</html>
