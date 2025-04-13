@@ -7,6 +7,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const userInput = document.getElementById('user-input');
     const sendButton = document.getElementById('send-button');
 
+    let genAI;
+    let model;
+
+    try {
+        // Initialize the Gemini API
+        genAI = new window.GoogleGenerativeAI(window.config.apiKey);
+        model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        console.log('Gemini API initialized successfully');
+    } catch (error) {
+        console.error('Error initializing Gemini API:', error);
+    }
+
     // Function to add a message to the chat
     function addMessage(text, isUser = false) {
         const messageDiv = document.createElement('div');
@@ -19,33 +31,21 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add welcome message
     addMessage("Hello! I'm ADIL, your AI assistant. I'm here to help you with any questions or tasks you might have. How can I assist you today?");
 
-    // Function to get AI response using fetch
+    // Function to get AI response
     async function getAIResponse(userMessage) {
-        try {
-            const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${config.apiKey}`
-                },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [{
-                            text: userMessage
-                        }]
-                    }]
-                })
-            });
+        if (!model) {
+            throw new Error('Gemini API not initialized');
+        }
 
-            const data = await response.json();
-            if (data.candidates && data.candidates[0].content.parts[0].text) {
-                return data.candidates[0].content.parts[0].text;
-            } else {
-                return "I apologize, but I couldn't generate a response. Please try again.";
-            }
+        try {
+            console.log('Sending message to Gemini:', userMessage);
+            const result = await model.generateContent(userMessage);
+            console.log('Received response from Gemini');
+            const response = await result.response;
+            return response.text();
         } catch (error) {
             console.error('Error getting AI response:', error);
-            return "I apologize, but I encountered an error. Please try again.";
+            throw error;
         }
     }
 
@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const response = await getAIResponse(message);
                 addMessage(response);
             } catch (error) {
-                console.error('Error:', error);
+                console.error('Error in handleUserInput:', error);
                 addMessage("I apologize, but I encountered an error. Please try again.");
             } finally {
                 // Re-enable input
